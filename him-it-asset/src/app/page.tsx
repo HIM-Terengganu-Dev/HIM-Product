@@ -85,8 +85,12 @@ export default async function AssetDashboard() {
                 </TableRow>
               ) : (
                 assets.map((asset) => (
-                  <TableRow key={asset.id}>
-                    <TableCell className="font-medium">{asset.assetTag}</TableCell>
+                  <TableRow key={asset.id} className="hover:bg-slate-50 transition-colors">
+                    <TableCell className="font-medium">
+                      <Link href={`/asset/${asset.id}`} className="text-blue-600 hover:underline">
+                        {asset.assetTag}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <p className="font-semibold text-gray-900">{asset.name}</p>
                       <p className="text-xs text-gray-500">{asset.department}</p>

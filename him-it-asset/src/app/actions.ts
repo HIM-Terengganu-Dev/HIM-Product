@@ -40,8 +40,21 @@ export async function createAsset(formData: FormData) {
 }
 
 export async function deleteAsset(id: string) {
+  // To avoid relation errors, first delete associated issues
+  await prisma.assetIssue.deleteMany({
+    where: { assetId: id },
+  });
   await prisma.asset.delete({
     where: { id },
   });
+  revalidatePath("/");
+}
+
+export async function updateAssetStatus(id: string, newStatus: any) {
+  await prisma.asset.update({
+    where: { id },
+    data: { status: newStatus },
+  });
+  revalidatePath(`/asset/${id}`);
   revalidatePath("/");
 }

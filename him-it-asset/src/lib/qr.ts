@@ -1,8 +1,8 @@
 import QRCode from "qrcode";
 
 export async function generateAssetQR(assetTag: string) {
-  // If the ticketing system is running elsewhere, we specify its URL. For local testing, we assume localhost:3000
-  const ticketingUrl = process.env.NEXT_PUBLIC_TICKETING_URL || "http://localhost:3000";
+  // If the ticketing system is running elsewhere, we specify its URL. For local testing, we assume localhost:3001
+  const ticketingUrl = process.env.NEXT_PUBLIC_TICKETING_URL || "http://localhost:3001";
   const urlToEncode = `${ticketingUrl}/submit?assetId=${assetTag}`;
   
   try {
