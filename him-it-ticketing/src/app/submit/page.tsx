@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import TicketForm from "@/components/TicketForm";
-import { Ticket, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Ticket, Clock, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Submit IT Ticket | HIM IT Support",
@@ -67,7 +68,9 @@ export default function SubmitPage() {
                 </p>
               </div>
             </div>
-            <TicketForm />
+            <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>}>
+              <TicketForm />
+            </Suspense>
           </div>
 
           {/* Sidebar */}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ticketSchema, type TicketFormValues } from "@/lib/validations";
@@ -13,6 +14,7 @@ import {
   ChevronDown,
   Mail,
   Phone,
+  MonitorSmartphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,14 +27,24 @@ export default function TicketForm() {
   } | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const assetIdFromUrl = searchParams.get("assetId");
+
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
   });
+
+  useEffect(() => {
+    if (assetIdFromUrl) {
+      setValue("assetId", assetIdFromUrl);
+    }
+  }, [assetIdFromUrl, setValue]);
 
   const onSubmit = async (data: TicketFormValues) => {
     setSubmitting(true);
@@ -245,6 +257,24 @@ export default function TicketForm() {
           )}
         </div>
       </div>
+
+      {/* Row: Asset ID (only shown if present) */}
+      {assetIdFromUrl && (
+        <div className="space-y-1.5 rounded-xl border border-blue-200 bg-blue-50/50 p-4">
+          <label className="text-sm font-semibold text-blue-900 flex items-center gap-1.5">
+            <MonitorSmartphone className="h-4 w-4 text-blue-600" />
+            Reporting Asset
+          </label>
+          <input
+            {...register("assetId")}
+            readOnly
+            className={cn(inputBase, "bg-gray-100 text-gray-600 cursor-not-allowed border-gray-200 shadow-none")}
+          />
+          <p className="text-xs font-medium text-blue-600">
+            This ticket is automatically linked to the scanned asset.
+          </p>
+        </div>
+      )}
 
       {/* Subject */}
       <div className="space-y-1.5">

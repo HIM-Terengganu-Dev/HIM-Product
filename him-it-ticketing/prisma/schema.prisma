@@ -43,8 +43,64 @@ model Ticket {
   subject       String
   description   String   @db.Text
   status        Status   @default(Open)
+  assetId       String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@map("tickets")
+}
+
+enum AssetCategory {
+  Laptop
+  Desktop
+  Monitor
+  Network
+  Accessory
+  Other
+}
+
+enum AssetStatus {
+  Available
+  Assigned
+  InRepair
+  Retired
+}
+
+enum AssetIssueStatus {
+  Pending
+  Resolved
+}
+
+model Asset {
+  id           String        @id @default(uuid())
+  assetTag     String        @unique
+  name         String
+  category     AssetCategory
+  status       AssetStatus   @default(Available)
+  department   String
+  assignedUser String?
+  purchaseDate DateTime
+  qrCodeUrl    String?       @db.Text
+  issueCount   Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  issues AssetIssue[]
+
+  @@map("assets")
+}
+
+model AssetIssue {
+  id               String           @id @default(uuid())
+  assetId          String
+  ticketId         String?
+  ticketNumber     String?
+  reportedBy       String
+  issueDescription String           @db.Text
+  status           AssetIssueStatus @default(Pending)
+  dateReported     DateTime         @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id])
+
+  @@map("asset_issues")
 }

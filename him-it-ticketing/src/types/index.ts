@@ -12,6 +12,7 @@ export interface Ticket {
   subject: string;
   description: string;
   status: Status;
+  assetId?: string | null;
   createdAt: string;
   updatedAt: string;
 }

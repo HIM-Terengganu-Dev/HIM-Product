@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { requesterName, requesterEmail, requesterPhone, department, category, priority, subject, description } =
+    const { requesterName, requesterEmail, requesterPhone, department, category, priority, subject, description, assetId } =
       validation.data;
 
     // Generate ticket number based on total count
@@ -75,8 +75,36 @@ export async function POST(request: Request) {
         subject,
         description,
         status: "Open",
+        assetId: assetId || null,
       },
     });
+
+    // Smart Linking: If an assetId was provided, log an issue against that asset
+    if (assetId) {
+      // Find the asset by assetTag
+      const asset = await prisma.asset.findUnique({
+        where: { assetTag: assetId },
+      });
+
+      if (asset) {
+        // Create an AssetIssue
+        await prisma.assetIssue.create({
+          data: {
+            assetId: asset.id,
+            ticketId: ticket.id,
+            ticketNumber: ticket.ticketNumber,
+            reportedBy: requesterName,
+            issueDescription: subject,
+          },
+        });
+        
+        // Increment issue count
+        await prisma.asset.update({
+          where: { id: asset.id },
+          data: { issueCount: { increment: 1 } },
+        });
+      }
+    }
 
     return NextResponse.json({ ticket }, { status: 201 });
   } catch (error) {

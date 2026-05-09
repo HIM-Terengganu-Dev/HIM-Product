@@ -34,6 +34,7 @@ export const ticketSchema = z.object({
     .string()
     .min(10, "Description must be at least 10 characters")
     .max(5000, "Description is too long"),
+  assetId: z.string().optional(),
 });
 
 export const updateStatusSchema = z.object({
