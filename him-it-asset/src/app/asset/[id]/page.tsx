@@ -7,9 +7,10 @@ import Link from "next/link";
 import { format } from "date-fns";
 import StatusUpdater from "./StatusUpdater";
 
-export default async function AssetDetailPage({ params }: { params: { id: string } }) {
+export default async function AssetDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const asset = await prisma.asset.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       issues: {
         orderBy: { dateReported: "desc" },
