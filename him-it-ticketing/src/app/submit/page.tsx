@@ -144,9 +144,9 @@ export default function SubmitPage() {
               <p className="text-blue-200 text-sm mt-1">
                 For critical outages affecting production:
               </p>
-              <p className="mt-2 text-lg font-bold">ext. 1234</p>
+              <p className="mt-2 text-lg font-bold">013-5031360</p>
               <p className="text-xs text-blue-300 mt-3">
-                Mon–Fri, 8:00 AM – 6:00 PM
+                Sat–Thur, 9:00 AM – 4:00 PM
               </p>
             </div>
           </div>
