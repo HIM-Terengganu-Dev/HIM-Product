@@ -10,6 +10,12 @@ export const ticketSchema = z.object({
     .email("Please enter a valid email address")
     .optional()
     .or(z.literal("")),
+  requesterPhone: z
+    .string()
+    .regex(/^[0-9+\-\s()]*$/, "Please enter a valid phone number")
+    .max(20, "Phone number is too long")
+    .optional()
+    .or(z.literal("")),
   department: z
     .string()
     .min(2, "Department must be at least 2 characters")

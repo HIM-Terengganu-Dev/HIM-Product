@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { requesterName, requesterEmail, department, category, priority, subject, description } =
+    const { requesterName, requesterEmail, requesterPhone, department, category, priority, subject, description } =
       validation.data;
 
     // Generate ticket number based on total count
@@ -68,6 +68,7 @@ export async function POST(request: Request) {
         ticketNumber,
         requesterName,
         requesterEmail: requesterEmail || null,
+        requesterPhone: requesterPhone || null,
         department,
         category: category as Category,
         priority: priority as Priority,

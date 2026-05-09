@@ -5,6 +5,7 @@ export interface Ticket {
   ticketNumber: string;
   requesterName: string;
   requesterEmail?: string | null;
+  requesterPhone?: string | null;
   department: string;
   category: Category;
   priority: Priority;

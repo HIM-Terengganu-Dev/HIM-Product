@@ -3,7 +3,7 @@
 import { Ticket, STATUS_CONFIG, STATUSES } from "@/types";
 import { PriorityBadge, StatusBadge } from "./TicketBadge";
 import { formatDate } from "@/lib/utils";
-import { X, Clock, User, Building2, Tag, FileText, Mail } from "lucide-react";
+import { X, Clock, User, Building2, Tag, FileText, Mail, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TicketDetailModalProps {
@@ -75,7 +75,18 @@ export default function TicketDetailModal({
                   <Mail className="h-3.5 w-3.5 text-gray-400" />
                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Email</p>
                 </div>
-                <p className="text-sm text-gray-400 italic">Not provided — no notifications</p>
+                <p className="text-sm text-gray-400 italic">Not provided</p>
+              </div>
+            )}
+            {ticket.requesterPhone ? (
+              <MetaItem icon={Phone} label="Phone" value={ticket.requesterPhone} />
+            ) : (
+              <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 opacity-50">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Phone className="h-3.5 w-3.5 text-gray-400" />
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</p>
+                </div>
+                <p className="text-sm text-gray-400 italic">Not provided</p>
               </div>
             )}
             <MetaItem

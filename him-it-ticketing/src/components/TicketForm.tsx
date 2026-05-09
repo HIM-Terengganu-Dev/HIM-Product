@@ -12,6 +12,7 @@ import {
   Ticket,
   ChevronDown,
   Mail,
+  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -148,9 +149,31 @@ export default function TicketForm() {
         </div>
       </div>
 
-      {/* Row 2: Department */}
+      {/* Row 2: Phone + Department */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5 sm:col-span-2">
+        <div className="space-y-1.5">
+          <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+            Phone Number
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-normal text-gray-500">Optional</span>
+          </label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              {...register("requesterPhone")}
+              type="tel"
+              placeholder="e.g. 012-3456789"
+              className={cn(inputBase, "pl-10", errors.requesterPhone && inputError)}
+            />
+          </div>
+          {errors.requesterPhone ? (
+            <p className={errorText}>{errors.requesterPhone.message as string}</p>
+          ) : (
+            <p className="text-xs text-gray-400">
+              For urgent issues, IT may contact you directly.
+            </p>
+          )}
+        </div>
+        <div className="space-y-1.5">
           <label className="text-sm font-semibold text-gray-700">
             Department <span className="text-red-500">*</span>
           </label>
