@@ -1,16 +1,8 @@
 import { getAssets } from "./actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Printer, Plus, AlertCircle, MonitorSmartphone } from "lucide-react";
-import Link from "next/link";
+import { AssetTable } from "@/components/AssetTable";
+import { AlertCircle, MonitorSmartphone } from "lucide-react";
 import { CreateAssetDialog } from "@/components/CreateAssetDialog";
 
 export default async function AssetDashboard() {
@@ -34,12 +26,6 @@ export default async function AssetDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/print">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Printer className="h-4 w-4" />
-                Print A4 Labels
-              </Button>
-            </Link>
             <CreateAssetDialog />
           </div>
         </div>
@@ -62,62 +48,7 @@ export default async function AssetDashboard() {
           </div>
         )}
 
-        {/* Asset Table */}
-        <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader className="bg-gray-50">
-              <TableRow>
-                <TableHead>Asset Tag</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Assigned To</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-center">Issues</TableHead>
-                <TableHead className="text-right">QR Code</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {assets.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-32 text-center text-gray-500">
-                    No assets found. Click "Add Asset" to get started.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                assets.map((asset) => (
-                  <TableRow key={asset.id} className="hover:bg-slate-50 transition-colors">
-                    <TableCell className="font-medium">
-                      <Link href={`/asset/${asset.id}`} className="text-blue-600 hover:underline">
-                        {asset.assetTag}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <p className="font-semibold text-gray-900">{asset.name}</p>
-                      <p className="text-xs text-gray-500">{asset.department}</p>
-                    </TableCell>
-                    <TableCell>{asset.category}</TableCell>
-                    <TableCell>{asset.assignedUser || <span className="text-gray-400 italic">Unassigned</span>}</TableCell>
-                    <TableCell>
-                      <Badge className={asset.status === "Available" ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-blue-100 text-blue-800 hover:bg-blue-100"} variant="secondary">
-                        {asset.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={asset.issueCount >= 3 ? "destructive" : "secondary"}>
-                        {asset.issueCount}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {asset.qrCodeUrl && (
-                        <img src={asset.qrCodeUrl} alt="QR Code" className="w-8 h-8 ml-auto rounded border border-gray-200" />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <AssetTable assets={assets} />
       </div>
     </div>
   );

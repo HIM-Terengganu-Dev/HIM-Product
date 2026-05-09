@@ -5,8 +5,14 @@ import { Button } from "@/components/ui/button";
 
 import { PrintButton } from "@/components/PrintButton";
 
-export default async function PrintAssetsPage() {
-  const assets = await getAssets();
+export default async function PrintAssetsPage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
+  const { ids } = await searchParams;
+  let assets = await getAssets();
+
+  if (ids) {
+    const selectedIds = ids.split(",");
+    assets = assets.filter(asset => selectedIds.includes(asset.id));
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
