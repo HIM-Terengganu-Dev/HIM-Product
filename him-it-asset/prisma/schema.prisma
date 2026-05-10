@@ -72,18 +72,25 @@ enum AssetIssueStatus {
 }
 
 model Asset {
-  id           String        @id @default(uuid())
-  assetTag     String        @unique
-  name         String
-  category     AssetCategory
-  status       AssetStatus   @default(Available)
-  department   String
-  assignedUser String?
-  purchaseDate DateTime
-  qrCodeUrl    String?       @db.Text
-  issueCount   Int           @default(0)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id              String        @id @default(uuid())
+  assetTag        String        @unique
+  name            String
+  brand           String?
+  model           String?
+  specs           String?       @db.Text
+  serialNumber    String?       @unique
+  condition       String?
+  warranty        String?
+  warrantyEnd     DateTime?
+  category        AssetCategory
+  status          AssetStatus   @default(Available)
+  department      String
+  assignedUser    String?
+  purchaseDate    DateTime
+  qrCodeUrl       String?       @db.Text
+  issueCount      Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   issues AssetIssue[]
 

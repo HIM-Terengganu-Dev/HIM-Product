@@ -12,9 +12,17 @@ export async function getAssets() {
 
 export async function createAsset(formData: FormData) {
   const name = formData.get("name") as string;
+  const brand = formData.get("brand") as string;
+  const model = formData.get("model") as string;
+  const specs = formData.get("specs") as string;
+  const serialNumber = formData.get("serialNumber") as string;
+  const condition = formData.get("condition") as string;
+  const warranty = formData.get("warranty") as string;
   const category = formData.get("category") as any;
   const department = formData.get("department") as string;
   const assignedUser = formData.get("assignedUser") as string;
+  const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : new Date();
+  const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
   
   // Generate a unique Asset Tag: AST-{count}
   const count = await prisma.asset.count();
@@ -27,15 +35,60 @@ export async function createAsset(formData: FormData) {
     data: {
       assetTag,
       name,
+      brand,
+      model,
+      specs,
+      serialNumber,
+      condition,
+      warranty,
+      warrantyEnd,
       category,
       department,
       assignedUser: assignedUser || null,
-      purchaseDate: new Date(),
+      purchaseDate,
       status: "Available",
       qrCodeUrl,
     },
   });
 
+  revalidatePath("/");
+}
+
+export async function updateAsset(id: string, formData: FormData) {
+  const name = formData.get("name") as string;
+  const brand = formData.get("brand") as string;
+  const model = formData.get("model") as string;
+  const specs = formData.get("specs") as string;
+  const serialNumber = formData.get("serialNumber") as string;
+  const condition = formData.get("condition") as string;
+  const warranty = formData.get("warranty") as string;
+  const category = formData.get("category") as any;
+  const department = formData.get("department") as string;
+  const assignedUser = formData.get("assignedUser") as string;
+  const status = formData.get("status") as any;
+  const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : new Date();
+  const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
+
+  await prisma.asset.update({
+    where: { id },
+    data: {
+      name,
+      brand,
+      model,
+      specs,
+      serialNumber,
+      condition,
+      warranty,
+      warrantyEnd,
+      category,
+      department,
+      assignedUser: assignedUser || null,
+      status,
+      purchaseDate,
+    },
+  });
+
+  revalidatePath(`/asset/${id}`);
   revalidatePath("/");
 }
 

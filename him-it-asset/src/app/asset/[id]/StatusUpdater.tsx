@@ -13,17 +13,19 @@ import { Loader2 } from "lucide-react";
 
 export default function StatusUpdater({ assetId, currentStatus }: { assetId: string, currentStatus: string }) {
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(currentStatus);
 
   async function handleStatusChange(value: string | null) {
     if (!value) return;
     setLoading(true);
+    setStatus(value);
     await updateAssetStatus(assetId, value);
     setLoading(false);
   }
 
   return (
     <div className="flex items-center gap-2">
-      <Select defaultValue={currentStatus} onValueChange={handleStatusChange} disabled={loading}>
+      <Select value={status} onValueChange={handleStatusChange} disabled={loading}>
         <SelectTrigger className="w-[140px] h-9">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
