@@ -100,6 +100,11 @@ export function CreateAssetDialog() {
             <Textarea id="specs" name="specs" placeholder="RAM, CPU, Storage details..." rows={3} />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="notes">Internal Notes (Optional)</Label>
+            <Textarea id="notes" name="notes" placeholder="Any additional internal comments..." rows={2} />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="department">Department / Location</Label>
@@ -114,7 +119,7 @@ export function CreateAssetDialog() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="purchaseDate">Date of Purchase</Label>
-              <Input id="purchaseDate" name="purchaseDate" type="date" required />
+              <Input id="purchaseDate" name="purchaseDate" type="date" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="warranty">Warranty Duration</Label>

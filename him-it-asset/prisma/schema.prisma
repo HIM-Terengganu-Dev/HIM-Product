@@ -78,6 +78,7 @@ model Asset {
   brand           String?
   model           String?
   specs           String?       @db.Text
+  notes           String?       @db.Text
   serialNumber    String?       @unique
   condition       String?
   warranty        String?
@@ -86,13 +87,14 @@ model Asset {
   status          AssetStatus   @default(Available)
   department      String
   assignedUser    String?
-  purchaseDate    DateTime
+  purchaseDate    DateTime?
   qrCodeUrl       String?       @db.Text
   issueCount      Int           @default(0)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
   issues AssetIssue[]
+  logs   AssetLog[]
 
   @@map("assets")
 }
@@ -110,4 +112,17 @@ model AssetIssue {
   asset Asset @relation(fields: [assetId], references: [id])
 
   @@map("asset_issues")
+}
+
+model AssetLog {
+  id        String   @id @default(uuid())
+  assetId   String
+  action    String
+  details   String?  @db.Text
+  user      String?
+  createdAt DateTime @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id])
+
+  @@map("asset_logs")
 }

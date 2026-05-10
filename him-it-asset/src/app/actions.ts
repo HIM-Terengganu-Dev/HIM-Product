@@ -15,13 +15,14 @@ export async function createAsset(formData: FormData) {
   const brand = formData.get("brand") as string;
   const model = formData.get("model") as string;
   const specs = formData.get("specs") as string;
+  const notes = formData.get("notes") as string;
   const serialNumber = formData.get("serialNumber") as string;
   const condition = formData.get("condition") as string;
   const warranty = formData.get("warranty") as string;
   const category = formData.get("category") as any;
   const department = formData.get("department") as string;
   const assignedUser = formData.get("assignedUser") as string;
-  const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : new Date();
+  const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : null;
   const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
   
   // Generate a unique Asset Tag: AST-{count}
@@ -38,6 +39,7 @@ export async function createAsset(formData: FormData) {
       brand,
       model,
       specs,
+      notes,
       serialNumber,
       condition,
       warranty,
@@ -48,6 +50,13 @@ export async function createAsset(formData: FormData) {
       purchaseDate,
       status: "Available",
       qrCodeUrl,
+      logs: {
+        create: {
+          action: "Asset Created",
+          details: `Initial registration of ${name}.`,
+          user: "Admin",
+        }
+      }
     },
   });
 
@@ -59,6 +68,7 @@ export async function updateAsset(id: string, formData: FormData) {
   const brand = formData.get("brand") as string;
   const model = formData.get("model") as string;
   const specs = formData.get("specs") as string;
+  const notes = formData.get("notes") as string;
   const serialNumber = formData.get("serialNumber") as string;
   const condition = formData.get("condition") as string;
   const warranty = formData.get("warranty") as string;
@@ -66,7 +76,7 @@ export async function updateAsset(id: string, formData: FormData) {
   const department = formData.get("department") as string;
   const assignedUser = formData.get("assignedUser") as string;
   const status = formData.get("status") as any;
-  const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : new Date();
+  const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : null;
   const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
 
   await prisma.asset.update({
@@ -76,6 +86,7 @@ export async function updateAsset(id: string, formData: FormData) {
       brand,
       model,
       specs,
+      notes,
       serialNumber,
       condition,
       warranty,
@@ -85,6 +96,13 @@ export async function updateAsset(id: string, formData: FormData) {
       assignedUser: assignedUser || null,
       status,
       purchaseDate,
+      logs: {
+        create: {
+          action: "Asset Details Updated",
+          details: `Manual update of asset information and technical specs.`,
+          user: "Admin",
+        }
+      }
     },
   });
 
@@ -93,10 +111,10 @@ export async function updateAsset(id: string, formData: FormData) {
 }
 
 export async function deleteAsset(id: string) {
-  // To avoid relation errors, first delete associated issues
-  await prisma.assetIssue.deleteMany({
-    where: { assetId: id },
-  });
+  // To avoid relation errors, first delete associated records
+  await prisma.assetIssue.deleteMany({ where: { assetId: id } });
+  await prisma.assetLog.deleteMany({ where: { assetId: id } });
+  
   await prisma.asset.delete({
     where: { id },
   });
@@ -106,7 +124,16 @@ export async function deleteAsset(id: string) {
 export async function updateAssetStatus(id: string, newStatus: any) {
   await prisma.asset.update({
     where: { id },
-    data: { status: newStatus },
+    data: { 
+      status: newStatus,
+      logs: {
+        create: {
+          action: "Status Changed",
+          details: `Asset status changed to ${newStatus}.`,
+          user: "Admin",
+        }
+      }
+    },
   });
   revalidatePath(`/asset/${id}`);
   revalidatePath("/");

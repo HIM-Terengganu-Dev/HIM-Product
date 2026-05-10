@@ -103,6 +103,11 @@ export function EditAssetDialog({ asset }: { asset: any }) {
             <Textarea id="specs" name="specs" defaultValue={asset.specs || ""} placeholder="RAM, CPU, Storage details..." rows={3} />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="notes">Internal Notes (Optional)</Label>
+            <Textarea id="notes" name="notes" defaultValue={asset.notes || ""} placeholder="Any additional internal comments..." rows={2} />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="department">Department / Location</Label>
@@ -137,7 +142,6 @@ export function EditAssetDialog({ asset }: { asset: any }) {
                 name="purchaseDate" 
                 type="date" 
                 defaultValue={asset.purchaseDate ? format(new Date(asset.purchaseDate), "yyyy-MM-dd") : ""} 
-                required 
               />
             </div>
           </div>

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MonitorSmartphone, Building2, User, Ticket, CheckCircle2, Clock, Printer, ShieldCheck, Laptop, Info, Package } from "lucide-react";
+import { ArrowLeft, MonitorSmartphone, Building2, User, Ticket, CheckCircle2, Clock, Printer, ShieldCheck, Laptop, Info, Package, History, FileText } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import StatusUpdater from "./StatusUpdater";
@@ -18,6 +18,9 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
     include: {
       issues: {
         orderBy: { dateReported: "desc" },
+      },
+      logs: {
+        orderBy: { createdAt: "desc" },
       },
     },
   });
@@ -101,27 +104,39 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
 
           {/* Detailed Specs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-            {/* Technical Specs */}
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2 font-bold text-gray-900 text-sm">
-                <Laptop className="h-4 w-4 text-blue-600" />
-                Technical Specifications
+            {/* Technical Specs & Notes */}
+            <div className="p-6 space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 font-bold text-gray-900 text-sm">
+                  <Laptop className="h-4 w-4 text-blue-600" />
+                  Technical Specifications
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">Serial Number</span>
+                    <span className="font-mono font-bold text-gray-900">{asset.serialNumber || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">Physical Condition</span>
+                    <Badge variant="outline" className="text-[10px] h-5">{asset.condition || "N/A"}</Badge>
+                  </div>
+                  <div className="pt-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Configuration</span>
+                    <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-2 rounded-lg border border-gray-100">
+                      {asset.specs || "No configuration notes."}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-400">Serial Number</span>
-                  <span className="font-mono font-bold text-gray-900">{asset.serialNumber || "N/A"}</span>
+
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-2 font-bold text-gray-900 text-sm">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  Internal Notes
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-400">Physical Condition</span>
-                  <Badge variant="outline" className="text-[10px] h-5">{asset.condition || "N/A"}</Badge>
-                </div>
-                <div className="pt-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Configuration Details</span>
-                  <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-2.5 rounded-lg border border-gray-100 min-h-[60px]">
-                    {asset.specs || "No additional configuration notes."}
-                  </p>
-                </div>
+                <p className="text-xs text-gray-600 leading-relaxed bg-amber-50/50 p-2.5 rounded-lg border border-amber-100/50 italic">
+                  {asset.notes || "No internal notes added yet."}
+                </p>
               </div>
             </div>
 
@@ -145,7 +160,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Purchase Date</span>
                   <span className="font-bold text-gray-900">
-                    {format(new Date(asset.purchaseDate), "MMM d, yyyy")}
+                    {asset.purchaseDate ? format(new Date(asset.purchaseDate), "MMM d, yyyy") : "N/A"}
                   </span>
                 </div>
               </div>
@@ -179,49 +194,72 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        {/* Issue History Log */}
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-          <div className="border-b border-gray-100 bg-gray-50/50 p-6 flex items-center gap-3">
-            <Ticket className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-bold text-gray-900">Maintenance & Issue History</h2>
-          </div>
-          
-          <div className="p-0">
-            {asset.issues.length === 0 ? (
-              <div className="p-12 text-center text-gray-500">
-                <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-3" />
-                <p>No issues have ever been reported for this asset.</p>
-                <p className="text-sm">Hardware is in perfect condition.</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-100">
-                {asset.issues.map((issue) => (
-                  <div key={issue.id} className="p-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row gap-4 justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="font-semibold text-gray-900">
-                          {issue.ticketNumber ? (
-                            <span className="text-blue-600 hover:underline cursor-pointer">{issue.ticketNumber}</span>
-                          ) : (
-                            "Manual Entry"
-                          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Issue History Log */}
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <div className="border-b border-gray-100 bg-gray-50/50 p-6 flex items-center gap-3">
+              <Ticket className="h-5 w-5 text-gray-500" />
+              <h2 className="text-lg font-bold text-gray-900">Issue History</h2>
+            </div>
+            
+            <div className="p-0 max-h-[400px] overflow-y-auto">
+              {asset.issues.length === 0 ? (
+                <div className="p-12 text-center text-gray-500">
+                  <CheckCircle2 className="h-8 w-8 mx-auto text-green-400 mb-3" />
+                  <p>No issues reported.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100">
+                  {asset.issues.map((issue) => (
+                    <div key={issue.id} className="p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex justify-between items-start gap-2 mb-1">
+                        <span className="font-bold text-blue-600 text-sm">
+                          {issue.ticketNumber || "Manual"}
                         </span>
-                        <Badge variant="outline" className={issue.status === "Resolved" ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"}>
-                          {issue.status}
-                        </Badge>
+                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {format(new Date(issue.dateReported), "MMM d, yy")}
+                        </span>
                       </div>
-                      <p className="text-gray-600 mt-2">{issue.issueDescription}</p>
-                      <p className="text-sm text-gray-400 mt-2">Reported by: <span className="font-medium text-gray-600">{issue.reportedBy}</span></p>
+                      <p className="text-xs text-gray-600 line-clamp-2">{issue.issueDescription}</p>
                     </div>
-                    
-                    <div className="text-sm text-gray-500 flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                      <Clock className="h-4 w-4" />
-                      {format(new Date(issue.dateReported), "MMM d, yyyy h:mm a")}
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Change History Log */}
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <div className="border-b border-gray-100 bg-gray-50/50 p-6 flex items-center gap-3">
+              <History className="h-5 w-5 text-gray-500" />
+              <h2 className="text-lg font-bold text-gray-900">Change History</h2>
+            </div>
+            
+            <div className="p-0 max-h-[400px] overflow-y-auto">
+              {asset.logs.length === 0 ? (
+                <div className="p-12 text-center text-gray-500">
+                  <p>No history records found.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100">
+                  {asset.logs.map((log) => (
+                    <div key={log.id} className="p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex justify-between items-start gap-2 mb-1">
+                        <span className="font-bold text-gray-900 text-sm">
+                          {log.action}
+                        </span>
+                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {format(new Date(log.createdAt), "MMM d, HH:mm")}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">{log.details}</p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
