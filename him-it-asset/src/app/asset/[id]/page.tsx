@@ -9,6 +9,8 @@ import StatusUpdater from "./StatusUpdater";
 import { EditAssetDialog } from "@/components/EditAssetDialog";
 import { DeleteAssetButton } from "@/components/DeleteAssetButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function AssetDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const asset = await prisma.asset.findUnique({

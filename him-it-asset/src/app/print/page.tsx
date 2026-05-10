@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 
 import { PrintButton } from "@/components/PrintButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function PrintAssetsPage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
   const { ids } = await searchParams;
   let assets = await getAssets();

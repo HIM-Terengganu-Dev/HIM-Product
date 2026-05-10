@@ -5,6 +5,8 @@ import { AssetTable } from "@/components/AssetTable";
 import { AlertCircle, MonitorSmartphone } from "lucide-react";
 import { CreateAssetDialog } from "@/components/CreateAssetDialog";
 
+export const dynamic = "force-dynamic";
+
 export default async function AssetDashboard() {
   const assets = await getAssets();
 
