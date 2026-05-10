@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MonitorSmartphone, Building2, User, Ticket, CheckCircle2, Clock, Printer, ShieldCheck, Laptop, Info, Package, History, FileText, Settings, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { formatMYT } from "@/lib/date-utils";
 import StatusUpdater from "./StatusUpdater";
 import { EditAssetDialog } from "@/components/EditAssetDialog";
 import { DeleteAssetButton } from "@/components/DeleteAssetButton";
@@ -160,7 +160,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
                         <div className="flex justify-between items-start mb-2">
                           <h3 className="text-sm font-black text-gray-900">{item.title}</h3>
                           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                            {format(new Date(item.date), "MMM d, HH:mm")}
+                            {formatMYT(new Date(item.date), "MMM d, HH:mm")}
                           </span>
                         </div>
                         <p className="text-xs text-gray-500 leading-relaxed">{item.details}</p>
@@ -226,12 +226,12 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-400 font-medium">Purchase Date</span>
-                    <span className="font-bold text-gray-700">{asset.purchaseDate ? format(new Date(asset.purchaseDate), "MMM d, yyyy") : "N/A"}</span>
+                    <span className="font-bold text-gray-700">{asset.purchaseDate ? formatMYT(new Date(asset.purchaseDate), "MMM d, yyyy") : "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-400 font-medium">Warranty Ends</span>
                     <span className={`font-bold ${asset.warrantyEnd && new Date(asset.warrantyEnd) < new Date() ? 'text-red-500' : 'text-gray-700'}`}>
-                      {asset.warrantyEnd ? format(new Date(asset.warrantyEnd), "MMM d, yyyy") : "N/A"}
+                      {asset.warrantyEnd ? formatMYT(new Date(asset.warrantyEnd), "MMM d, yyyy") : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -247,11 +247,11 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-center text-xs">
                   <span className="opacity-70">Last Modified</span>
-                  <span className="font-bold">{format(new Date(asset.updatedAt), "MMM d, HH:mm")}</span>
+                  <span className="font-bold">{formatMYT(new Date(asset.updatedAt), "MMM d, HH:mm")}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="opacity-70">Entry Created</span>
-                  <span className="font-bold">{format(new Date(asset.createdAt), "MMM d, yyyy")}</span>
+                  <span className="font-bold">{formatMYT(new Date(asset.createdAt), "MMM d, yyyy")}</span>
                 </div>
               </div>
               <Link href={`/print?ids=${asset.id}`} className="block">

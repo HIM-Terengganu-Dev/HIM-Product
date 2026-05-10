@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Loader2 } from "lucide-react";
 import { updateAsset } from "@/app/actions";
-import { format } from "date-fns";
+import { formatMYT } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 
 export function EditAssetDialog({ asset }: { asset: any }) {
@@ -149,7 +149,7 @@ export function EditAssetDialog({ asset }: { asset: any }) {
                 id="purchaseDate" 
                 name="purchaseDate" 
                 type="date" 
-                defaultValue={asset.purchaseDate ? format(new Date(asset.purchaseDate), "yyyy-MM-dd") : ""} 
+                defaultValue={asset.purchaseDate ? formatMYT(new Date(asset.purchaseDate), "yyyy-MM-dd") : ""} 
               />
             </div>
             <div className="space-y-2">
@@ -165,7 +165,7 @@ export function EditAssetDialog({ asset }: { asset: any }) {
                 id="warrantyEnd" 
                 name="warrantyEnd" 
                 type="date" 
-                defaultValue={asset.warrantyEnd ? format(new Date(asset.warrantyEnd), "yyyy-MM-dd") : ""} 
+                defaultValue={asset.warrantyEnd ? formatMYT(new Date(asset.warrantyEnd), "yyyy-MM-dd") : ""} 
               />
             </div>
           </div>
