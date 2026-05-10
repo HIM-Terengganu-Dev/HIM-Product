@@ -88,6 +88,7 @@ model Asset {
   department      String
   assignedUser    String?
   purchaseDate    DateTime?
+  invoiceNumber   String?
   qrCodeUrl       String?       @db.Text
   issueCount      Int           @default(0)
   createdAt       DateTime      @default(now())

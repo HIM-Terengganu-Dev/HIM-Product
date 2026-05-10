@@ -23,6 +23,7 @@ export async function createAsset(formData: FormData) {
   const department = formData.get("department") as string;
   const assignedUser = formData.get("assignedUser") as string;
   const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : null;
+  const invoiceNumber = formData.get("invoiceNumber") as string;
   const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
   
   // Generate a unique Asset Tag: AST-{count}
@@ -48,6 +49,7 @@ export async function createAsset(formData: FormData) {
       department,
       assignedUser: assignedUser || null,
       purchaseDate,
+      invoiceNumber,
       status: "Available",
       qrCodeUrl,
       logs: {
@@ -77,6 +79,7 @@ export async function updateAsset(id: string, formData: FormData) {
   const assignedUser = formData.get("assignedUser") as string;
   const status = formData.get("status") as any;
   const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : null;
+  const invoiceNumber = formData.get("invoiceNumber") as string;
   const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
 
   await prisma.asset.update({
@@ -96,6 +99,7 @@ export async function updateAsset(id: string, formData: FormData) {
       assignedUser: assignedUser || null,
       status,
       purchaseDate,
+      invoiceNumber,
       logs: {
         create: {
           action: "Asset Details Updated",

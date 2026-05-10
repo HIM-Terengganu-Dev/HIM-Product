@@ -8,13 +8,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Loader2 } from "lucide-react";
 import { updateAsset } from "@/app/actions";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export function EditAssetDialog({ asset }: { asset: any }) {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ export function EditAssetDialog({ asset }: { asset: any }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline" size="sm" className="flex items-center gap-2" />}>
+      <DialogTrigger className={cn(buttonVariants({ variant: "outline", size: "sm" }), "flex items-center gap-2")}>
         <Edit className="h-4 w-4" />
         Edit Asset
       </DialogTrigger>
@@ -81,6 +82,13 @@ export function EditAssetDialog({ asset }: { asset: any }) {
               <Input id="serialNumber" name="serialNumber" defaultValue={asset.serialNumber || ""} placeholder="Unique S/N" />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="invoiceNumber">Invoice / Receipt Num</Label>
+              <Input id="invoiceNumber" name="invoiceNumber" defaultValue={asset.invoiceNumber || ""} placeholder="INV-2024-001" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="condition">Asset Condition</Label>
               <select
                 id="condition"
@@ -94,6 +102,21 @@ export function EditAssetDialog({ asset }: { asset: any }) {
                 <option value="Fair">Fair</option>
                 <option value="Poor">Poor</option>
                 <option value="Broken">Broken</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">Asset Status</Label>
+              <select
+                id="status"
+                name="status"
+                defaultValue={asset.status}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                required
+              >
+                <option value="Available">Available</option>
+                <option value="Assigned">Assigned</option>
+                <option value="InRepair">In Repair</option>
+                <option value="Retired">Retired</option>
               </select>
             </div>
           </div>
@@ -121,21 +144,6 @@ export function EditAssetDialog({ asset }: { asset: any }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="status">Asset Status</Label>
-              <select
-                id="status"
-                name="status"
-                defaultValue={asset.status}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                required
-              >
-                <option value="Available">Available</option>
-                <option value="Assigned">Assigned</option>
-                <option value="InRepair">In Repair</option>
-                <option value="Retired">Retired</option>
-              </select>
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="purchaseDate">Date of Purchase</Label>
               <Input 
                 id="purchaseDate" 
@@ -144,13 +152,13 @@ export function EditAssetDialog({ asset }: { asset: any }) {
                 defaultValue={asset.purchaseDate ? format(new Date(asset.purchaseDate), "yyyy-MM-dd") : ""} 
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="warranty">Warranty Duration</Label>
               <Input id="warranty" name="warranty" defaultValue={asset.warranty || ""} placeholder="e.g. 3 Years" />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="warrantyEnd">Warranty Ended</Label>
               <Input 

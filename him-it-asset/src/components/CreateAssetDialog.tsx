@@ -8,12 +8,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Loader2 } from "lucide-react";
 import { createAsset } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 export function CreateAssetDialog() {
   const [open, setOpen] = useState(false);
@@ -30,7 +31,7 @@ export function CreateAssetDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="flex items-center gap-2" />}>
+      <DialogTrigger className={cn(buttonVariants({ variant: "default" }), "flex items-center gap-2")}>
         <Plus className="h-4 w-4" />
         Add Asset
       </DialogTrigger>
@@ -79,6 +80,13 @@ export function CreateAssetDialog() {
               <Input id="serialNumber" name="serialNumber" placeholder="Unique S/N" />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="invoiceNumber">Invoice / Receipt Num</Label>
+              <Input id="invoiceNumber" name="invoiceNumber" placeholder="INV-2024-001" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="condition">Asset Condition</Label>
               <select
                 id="condition"
@@ -92,6 +100,10 @@ export function CreateAssetDialog() {
                 <option value="Poor">Poor</option>
                 <option value="Broken">Broken</option>
               </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="purchaseDate">Date of Purchase</Label>
+              <Input id="purchaseDate" name="purchaseDate" type="date" />
             </div>
           </div>
 
@@ -116,11 +128,7 @@ export function CreateAssetDialog() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="purchaseDate">Date of Purchase</Label>
-              <Input id="purchaseDate" name="purchaseDate" type="date" />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="warranty">Warranty Duration</Label>
               <Input id="warranty" name="warranty" placeholder="e.g. 3 Years" />
