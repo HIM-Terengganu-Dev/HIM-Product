@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,13 +13,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Loader2 } from "lucide-react";
-import { updateAsset } from "@/app/actions";
+import { updateAsset, getAssetCategories } from "@/app/actions";
 import { formatMYT } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 
 export function EditAssetDialog({ asset }: { asset: any }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      getAssetCategories().then(setCategories);
+    }
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,12 +62,9 @@ export function EditAssetDialog({ asset }: { asset: any }) {
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
               >
-                <option value="Laptop">Laptop</option>
-                <option value="Desktop">Desktop</option>
-                <option value="Monitor">Monitor</option>
-                <option value="Network">Network Equipment</option>
-                <option value="Accessory">Accessory</option>
-                <option value="Other">Other</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                ))}
               </select>
             </div>
           </div>

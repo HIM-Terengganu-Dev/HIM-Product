@@ -50,13 +50,11 @@ model Ticket {
   @@map("tickets")
 }
 
-enum AssetCategory {
-  Laptop
-  Desktop
-  Monitor
-  Network
-  Accessory
-  Other
+model AssetCategory {
+  id    String  @id @default(uuid())
+  name  String  @unique
+
+  @@map("categories")
 }
 
 enum AssetStatus {
@@ -83,7 +81,7 @@ model Asset {
   condition       String?
   warranty        String?
   warrantyEnd     DateTime?
-  category        AssetCategory
+  category        String
   status          AssetStatus   @default(Available)
   department      String
   assignedUser    String?

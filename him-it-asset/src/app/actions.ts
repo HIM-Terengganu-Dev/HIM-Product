@@ -142,3 +142,46 @@ export async function updateAssetStatus(id: string, newStatus: any) {
   revalidatePath(`/asset/${id}`);
   revalidatePath("/");
 }
+
+// Category Management Actions
+export async function getAssetCategories() {
+  const categories = await prisma.assetCategory.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  if (categories.length === 0) {
+    const defaults = [
+      'Laptop', 'Desktop', 'Monitor', 'Network Equipment', 
+      'Accessory', 'Printer', 'Mobile Phone', 'Tablet', 'Other'
+    ];
+    for (const name of defaults) {
+      await prisma.assetCategory.upsert({
+        where: { name },
+        update: {},
+        create: { name },
+      });
+    }
+    return await prisma.assetCategory.findMany({
+      orderBy: { name: "asc" },
+    });
+  }
+
+  return categories;
+}
+
+export async function addAssetCategory(name: string) {
+  if (!name || name.trim() === "") return;
+  await prisma.assetCategory.upsert({
+    where: { name: name.trim() },
+    update: {},
+    create: { name: name.trim() },
+  });
+  revalidatePath("/");
+}
+
+export async function deleteAssetCategory(id: string) {
+  await prisma.assetCategory.delete({
+    where: { id },
+  });
+  revalidatePath("/");
+}

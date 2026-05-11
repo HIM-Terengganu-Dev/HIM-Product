@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AssetTable } from "@/components/AssetTable";
 import { AlertCircle, MonitorSmartphone, Package, Wrench, CheckCircle2, User } from "lucide-react";
 import { CreateAssetDialog } from "@/components/CreateAssetDialog";
+import { CategoryManager } from "@/components/CategoryManager";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,10 @@ export default async function AssetDashboard() {
               Monitor, track, and maintain organization-wide hardware assets.
             </p>
           </div>
-          <CreateAssetDialog />
+          <div className="flex items-center gap-3">
+            <CategoryManager />
+            <CreateAssetDialog />
+          </div>
         </div>
 
         {/* Stats Grid */}
