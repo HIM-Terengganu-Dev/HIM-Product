@@ -65,6 +65,15 @@ export async function createAsset(formData: FormData) {
     },
   });
 
+  if (assignedEmail) {
+    const createdAsset = await prisma.asset.findFirst({
+      where: { assetTag },
+    });
+    if (createdAsset) {
+      await sendAssetDeclarationEmail(createdAsset);
+    }
+  }
+
   revalidatePath("/");
 }
 
