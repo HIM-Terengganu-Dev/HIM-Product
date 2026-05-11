@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { generateAssetQR } from "@/lib/qr";
 import { revalidatePath } from "next/cache";
+import { sendAssetDeclarationEmail } from "@/lib/email";
 
 export async function getAssets() {
   return await prisma.asset.findMany({
@@ -22,6 +23,7 @@ export async function createAsset(formData: FormData) {
   const category = formData.get("category") as any;
   const department = formData.get("department") as string;
   const assignedUser = formData.get("assignedUser") as string;
+  const assignedEmail = formData.get("assignedEmail") as string;
   const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : null;
   const invoiceNumber = formData.get("invoiceNumber") as string;
   const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
@@ -48,6 +50,7 @@ export async function createAsset(formData: FormData) {
       category,
       department,
       assignedUser: assignedUser || null,
+      assignedEmail: assignedEmail || null,
       purchaseDate,
       invoiceNumber,
       status: "Available",
@@ -77,12 +80,15 @@ export async function updateAsset(id: string, formData: FormData) {
   const category = formData.get("category") as any;
   const department = formData.get("department") as string;
   const assignedUser = formData.get("assignedUser") as string;
+  const assignedEmail = formData.get("assignedEmail") as string;
   const status = formData.get("status") as any;
   const purchaseDate = formData.get("purchaseDate") ? new Date(formData.get("purchaseDate") as string) : null;
   const invoiceNumber = formData.get("invoiceNumber") as string;
   const warrantyEnd = formData.get("warrantyEnd") ? new Date(formData.get("warrantyEnd") as string) : null;
 
-  await prisma.asset.update({
+  const oldAsset = await prisma.asset.findUnique({ where: { id } });
+
+  const updatedAsset = await prisma.asset.update({
     where: { id },
     data: {
       name,
@@ -97,6 +103,7 @@ export async function updateAsset(id: string, formData: FormData) {
       category,
       department,
       assignedUser: assignedUser || null,
+      assignedEmail: assignedEmail || null,
       status,
       purchaseDate,
       invoiceNumber,
@@ -109,6 +116,10 @@ export async function updateAsset(id: string, formData: FormData) {
       }
     },
   });
+
+  if (assignedEmail && oldAsset?.assignedEmail !== assignedEmail) {
+    await sendAssetDeclarationEmail(updatedAsset);
+  }
 
   revalidatePath(`/asset/${id}`);
   revalidatePath("/");
@@ -183,5 +194,37 @@ export async function deleteAssetCategory(id: string) {
   await prisma.assetCategory.delete({
     where: { id },
   });
+  revalidatePath("/");
+}
+
+// Email Template Actions
+export async function getEmailTemplate() {
+  let template = await prisma.emailTemplate.findUnique({
+    where: { id: "default" },
+  });
+
+  if (!template) {
+    template = await prisma.emailTemplate.create({
+      data: {
+        id: "default",
+        subject: "Asset Declaration: {{assetName}}",
+        body: `Hello {{userName}},\n\nYou have been assigned a new IT Asset.\n\nAsset Details:\n- Name: {{assetName}}\n- Tag: {{assetTag}}\n- Serial Number: {{serialNumber}}\n- Model: {{model}}\n\nPlease keep this email for your records.\n\nThank you,\nIT Department`,
+      }
+    });
+  }
+
+  return template;
+}
+
+export async function updateEmailTemplate(formData: FormData) {
+  const subject = formData.get("subject") as string;
+  const body = formData.get("body") as string;
+
+  await prisma.emailTemplate.upsert({
+    where: { id: "default" },
+    update: { subject, body },
+    create: { id: "default", subject, body },
+  });
+
   revalidatePath("/");
 }

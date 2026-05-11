@@ -85,6 +85,7 @@ model Asset {
   status          AssetStatus   @default(Available)
   department      String
   assignedUser    String?
+  assignedEmail   String?
   purchaseDate    DateTime?
   invoiceNumber   String?
   qrCodeUrl       String?       @db.Text
@@ -96,6 +97,15 @@ model Asset {
   logs   AssetLog[]
 
   @@map("assets")
+}
+
+model EmailTemplate {
+  id        String   @id @default("default")
+  subject   String   @default("Asset Declaration: {{assetName}}")
+  body      String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("email_templates")
 }
 
 model AssetIssue {

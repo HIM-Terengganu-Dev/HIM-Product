@@ -207,9 +207,19 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
               <div className="p-6 space-y-5">
                 <div className="space-y-1">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Assignment</p>
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm font-bold text-gray-700">{asset.assignedUser || "Stock/Unassigned"}</span>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm font-bold text-gray-700">{asset.assignedUser || "Stock/Unassigned"}</span>
+                    </div>
+                    {asset.assignedEmail && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="w-4"></span>
+                        <a href={`mailto:${asset.assignedEmail}`} className="text-blue-500 hover:underline">
+                          {asset.assignedEmail}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-1">

@@ -5,6 +5,7 @@ import { AssetTable } from "@/components/AssetTable";
 import { AlertCircle, MonitorSmartphone, Package, Wrench, CheckCircle2, User } from "lucide-react";
 import { CreateAssetDialog } from "@/components/CreateAssetDialog";
 import { CategoryManager } from "@/components/CategoryManager";
+import { EmailSettingsDialog } from "@/components/EmailSettingsDialog";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export default async function AssetDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <EmailSettingsDialog />
             <CategoryManager />
             <CreateAssetDialog />
           </div>

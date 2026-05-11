@@ -128,9 +128,15 @@ export function CreateAssetDialog() {
               <Label htmlFor="department">Department / Location</Label>
               <Input id="department" name="department" placeholder="e.g. IT, HR, Floor 2" required />
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="assignedUser">Assigned User (Optional)</Label>
               <Input id="assignedUser" name="assignedUser" placeholder="e.g. Ahmad Ismail" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="assignedEmail">Owner Email (Optional)</Label>
+              <Input id="assignedEmail" name="assignedEmail" type="email" placeholder="e.g. ahmad@example.com" />
             </div>
           </div>
 
