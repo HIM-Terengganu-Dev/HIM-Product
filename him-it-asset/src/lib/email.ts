@@ -115,7 +115,7 @@ export async function sendAssetDeclarationEmail(asset: any) {
                       <div style="background:#ffffff; padding:8px; border:1px solid #E2E8F0; border-radius:12px; display:inline-block;">
                         <img src="cid:qrcode" width="100" height="100" alt="QR Code" style="display:block;" />
                       </div>
-                      <p style="margin:8px 0 0;font-size:10px;color:#94A3B8;font-weight:500;">Scan to view details</p>
+                      <p style="margin:8px 0 0;font-size:10px;color:#94A3B8;font-weight:500;">Scan to report any issues for this asset</p>
                     </td>
                   </tr>
                 </table>
