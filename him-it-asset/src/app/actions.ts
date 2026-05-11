@@ -53,7 +53,7 @@ export async function createAsset(formData: FormData) {
       assignedEmail: assignedEmail || null,
       purchaseDate,
       invoiceNumber,
-      status: "Available",
+      status: (assignedUser || assignedEmail) ? "Assigned" : "Available",
       qrCodeUrl,
       logs: {
         create: {
@@ -113,7 +113,7 @@ export async function updateAsset(id: string, formData: FormData) {
       department,
       assignedUser: assignedUser || null,
       assignedEmail: assignedEmail || null,
-      status,
+      status: (status === "Available" && (assignedUser || assignedEmail)) ? "Assigned" : status,
       purchaseDate,
       invoiceNumber,
       logs: {
