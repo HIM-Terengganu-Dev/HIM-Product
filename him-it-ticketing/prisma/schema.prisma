@@ -50,13 +50,11 @@ model Ticket {
   @@map("tickets")
 }
 
-enum AssetCategory {
-  Laptop
-  Desktop
-  Monitor
-  Network
-  Accessory
-  Other
+model AssetCategory {
+  id    String  @id @default(uuid())
+  name  String  @unique
+
+  @@map("categories")
 }
 
 enum AssetStatus {
@@ -72,22 +70,42 @@ enum AssetIssueStatus {
 }
 
 model Asset {
-  id           String        @id @default(uuid())
-  assetTag     String        @unique
-  name         String
-  category     AssetCategory
-  status       AssetStatus   @default(Available)
-  department   String
-  assignedUser String?
-  purchaseDate DateTime
-  qrCodeUrl    String?       @db.Text
-  issueCount   Int           @default(0)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id              String        @id @default(uuid())
+  assetTag        String        @unique
+  name            String
+  brand           String?
+  model           String?
+  specs           String?       @db.Text
+  notes           String?       @db.Text
+  serialNumber    String?       @unique
+  condition       String?
+  warranty        String?
+  warrantyEnd     DateTime?
+  category        String
+  status          AssetStatus   @default(Available)
+  department      String
+  assignedUser    String?
+  assignedEmail   String?
+  purchaseDate    DateTime?
+  invoiceNumber   String?
+  qrCodeUrl       String?       @db.Text
+  issueCount      Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   issues AssetIssue[]
+  logs   AssetLog[]
 
   @@map("assets")
+}
+
+model EmailTemplate {
+  id        String   @id @default("default")
+  subject   String   @default("Asset Declaration: {{assetName}}")
+  body      String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("email_templates")
 }
 
 model AssetIssue {
@@ -103,4 +121,17 @@ model AssetIssue {
   asset Asset @relation(fields: [assetId], references: [id])
 
   @@map("asset_issues")
+}
+
+model AssetLog {
+  id        String   @id @default(uuid())
+  assetId   String
+  action    String
+  details   String?  @db.Text
+  user      String?
+  createdAt DateTime @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id])
+
+  @@map("asset_logs")
 }
