@@ -83,26 +83,39 @@ export async function sendAssetDeclarationEmail(asset: any) {
               </div>
 
               <div style="margin-top:32px;padding-top:32px;border-top:1px solid #F1F5F9;">
-                <p style="margin:0 0 16px;font-size:12px;color:#64748B;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Hardware Specifications</p>
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:12px;padding:20px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-bottom:12px;">
-                      <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Model</p>
-                      <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${asset.model || 'N/A'}</p>
+                    <td style="vertical-align: top;">
+                      <p style="margin:0 0 16px;font-size:12px;color:#64748B;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Hardware Specifications</p>
+                      <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:12px;padding:20px;">
+                        <tr>
+                          <td style="padding-bottom:12px;">
+                            <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Model</p>
+                            <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${asset.model || 'N/A'}</p>
+                          </td>
+                          <td style="padding-bottom:12px;">
+                            <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Brand</p>
+                            <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${asset.brand || 'N/A'}</p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Serial Number</p>
+                            <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;font-family:monospace;">${asset.serialNumber || 'N/A'}</p>
+                          </td>
+                          <td>
+                            <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Condition</p>
+                            <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${asset.condition || 'Good'}</p>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
-                    <td style="padding-bottom:12px;">
-                      <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Brand</p>
-                      <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${asset.brand || 'N/A'}</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Serial Number</p>
-                      <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;font-family:monospace;">${asset.serialNumber || 'N/A'}</p>
-                    </td>
-                    <td>
-                      <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Condition</p>
-                      <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${asset.condition || 'Good'}</p>
+                    <td width="140" style="vertical-align: top; padding-left: 24px; text-align: center;">
+                      <p style="margin:0 0 12px;font-size:10px;color:#64748B;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Asset QR Code</p>
+                      <div style="background:#ffffff; padding:8px; border:1px solid #E2E8F0; border-radius:12px; display:inline-block;">
+                        <img src="cid:qrcode" width="100" height="100" alt="QR Code" style="display:block;" />
+                      </div>
+                      <p style="margin:8px 0 0;font-size:10px;color:#94A3B8;font-weight:500;">Scan to view details</p>
                     </td>
                   </tr>
                 </table>
@@ -129,12 +142,19 @@ export async function sendAssetDeclarationEmail(asset: any) {
   `;
 
   try {
-    console.log(`Attempting to send HTML email to ${asset.assignedEmail}...`);
+    console.log(`Attempting to send HTML email with QR to ${asset.assignedEmail}...`);
     const info = await transporter.sendMail({
       from: `"HIM IT Infrastructure" <${process.env.SMTP_USER}>`,
       to: asset.assignedEmail,
       subject: subject,
       html: html,
+      attachments: asset.qrCodeUrl ? [
+        {
+          filename: 'qrcode.png',
+          path: asset.qrCodeUrl,
+          cid: 'qrcode' // same as in img src
+        }
+      ] : []
     });
     console.log(`Email sent successfully! MessageID: ${info.messageId}`);
     return info;
