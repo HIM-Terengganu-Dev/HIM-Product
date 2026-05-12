@@ -153,3 +153,113 @@ export async function sendStatusUpdateEmail({
     throw error;
   }
 }
+
+export async function sendNewTicketAdminNotification(ticket: any) {
+  const adminEmail = process.env.SMTP_USER || "sm.himproduct02@gmail.com";
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1E3A8A,#1D4ED8);padding:32px 40px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <p style="margin:0;font-size:13px;color:#93C5FD;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Admin Notification</p>
+                    <h1 style="margin:4px 0 0;font-size:22px;color:#ffffff;font-weight:800;">New Ticket Received</h1>
+                  </td>
+                  <td align="right">
+                    <span style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 16px;font-size:15px;font-weight:900;color:#ffffff;font-family:monospace;letter-spacing:2px;">${ticket.ticketNumber}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 40px;">
+              <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+                A new support ticket has been submitted to the system. Here are the details:
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:12px;padding:20px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding-bottom:12px;">
+                    <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Requester</p>
+                    <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${ticket.requesterName}</p>
+                  </td>
+                  <td style="padding-bottom:12px;">
+                    <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Category</p>
+                    <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${ticket.category}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-bottom:12px;">
+                    <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Priority</p>
+                    <p style="margin:2px 0 0;font-size:14px;color:#ef4444;font-weight:800;">${ticket.priority}</p>
+                  </td>
+                  <td style="padding-bottom:12px;">
+                    <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Department</p>
+                    <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${ticket.department}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="background:#F1F5F9;border-left:4px solid #1D4ED8;padding:16px;border-radius:0 8px 8px 0;margin-bottom:24px;">
+                <p style="margin:0 0 4px;font-size:12px;color:#64748B;font-weight:700;text-transform:uppercase;">Subject</p>
+                <p style="margin:0;font-size:15px;color:#1E293B;font-weight:700;">${ticket.subject}</p>
+              </div>
+
+              <div style="margin-bottom:32px;">
+                <p style="margin:0 0 8px;font-size:12px;color:#64748B;font-weight:700;text-transform:uppercase;">Description</p>
+                <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;white-space:pre-wrap;">${ticket.description}</p>
+              </div>
+
+              <div style="text-align:center;">
+                <a href="${process.env.NEXTAUTH_URL}/admin/tickets/${ticket.id}" style="display:inline-block;background:#1D4ED8;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View Ticket in Admin Dashboard</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:20px 40px;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#94A3B8;">
+                HIM IT Support Ticketing System &bull; Automated Admin Alert
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  try {
+    console.log(`Sending new ticket alert to admin (${adminEmail})...`);
+    await transporter.sendMail({
+      from: `"HIM IT Support Alert" <${process.env.SMTP_USER}>`,
+      to: adminEmail,
+      subject: `🔴 [${ticket.priority}] New Ticket: ${ticket.subject} (${ticket.ticketNumber})`,
+      html,
+    });
+    console.log(`Admin alert sent successfully!`);
+  } catch (error) {
+    console.error("Failed to send admin notification:", error);
+  }
+}

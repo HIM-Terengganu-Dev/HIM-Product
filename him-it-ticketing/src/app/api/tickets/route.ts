@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ticketSchema } from "@/lib/validations";
 import { Prisma, Category, Priority, Status } from "@prisma/client";
+import { sendNewTicketAdminNotification } from "@/lib/email";
 
 // GET /api/tickets — list all tickets with optional filters
 export async function GET(request: Request) {
@@ -104,6 +105,13 @@ export async function POST(request: Request) {
           data: { issueCount: { increment: 1 } },
         });
       }
+    }
+
+    // Notify Admin of new ticket
+    try {
+      await sendNewTicketAdminNotification(ticket);
+    } catch (err) {
+      console.error("[Admin notification failed]", err);
     }
 
     return NextResponse.json({ ticket }, { status: 201 });
