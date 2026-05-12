@@ -57,17 +57,18 @@ export async function PATCH(
 
     // Send email notification if requester provided an email and status actually changed
     if (existing.requesterEmail && existing.status !== newStatus) {
-      // Fire-and-forget — don't block the API response
-      sendStatusUpdateEmail({
-        to: existing.requesterEmail,
-        ticketNumber: ticket.ticketNumber,
-        subject: ticket.subject,
-        requesterName: ticket.requesterName,
-        oldStatus: existing.status,
-        newStatus,
-      }).catch((err) =>
-        console.error("[Email notification failed]", err)
-      );
+      try {
+        await sendStatusUpdateEmail({
+          to: existing.requesterEmail,
+          ticketNumber: ticket.ticketNumber,
+          subject: ticket.subject,
+          requesterName: ticket.requesterName,
+          oldStatus: existing.status,
+          newStatus,
+        });
+      } catch (err) {
+        console.error("[Email notification failed]", err);
+      }
     }
 
     return NextResponse.json({ ticket });

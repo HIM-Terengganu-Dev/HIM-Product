@@ -133,10 +133,23 @@ export async function sendStatusUpdateEmail({
 </html>
   `;
 
-  await transporter.sendMail({
-    from: `"HIM IT Support" <${process.env.SMTP_USER}>`,
-    to,
-    subject: `[${ticketNumber}] Your ticket status has been updated to "${newLabel}"`,
-    html,
-  });
+  try {
+    console.log(`Attempting to send ticket status email to ${to}...`);
+    const info = await transporter.sendMail({
+      from: `"HIM IT Support" <${process.env.SMTP_USER}>`,
+      to,
+      subject: `[${ticketNumber}] Your ticket status has been updated to "${newLabel}"`,
+      html,
+    });
+    console.log(`Ticket email sent successfully! MessageID: ${info.messageId}`);
+    return info;
+  } catch (error: any) {
+    console.error("CRITICAL TICKETING EMAIL FAILURE:");
+    console.error(`- To: ${to}`);
+    console.error(`- Ticket: ${ticketNumber}`);
+    console.error(`- Error Message: ${error.message}`);
+    console.error(`- Error Code: ${error.code}`);
+    if (error.response) console.error(`- Server Response: ${error.response}`);
+    throw error;
+  }
 }
