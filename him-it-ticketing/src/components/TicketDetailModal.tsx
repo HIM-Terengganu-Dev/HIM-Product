@@ -1,5 +1,5 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import { Ticket, STATUS_CONFIG, STATUSES } from "@/types";
 import { PriorityBadge, StatusBadge } from "./TicketBadge";
 import { formatDate } from "@/lib/utils";
