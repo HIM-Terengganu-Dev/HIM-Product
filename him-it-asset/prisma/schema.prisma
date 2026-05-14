@@ -47,10 +47,26 @@ model Ticket {
   personInCharge  String?
   adminDescription String? @db.Text
   actionTaken      String? @db.Text
+  resolvedAt    DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  logs          TicketLog[]
+
   @@map("tickets")
+}
+
+model TicketLog {
+  id        String   @id @default(uuid())
+  ticketId  String
+  action    String
+  details   String?  @db.Text
+  user      String?
+  createdAt DateTime @default(now())
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_logs")
 }
 
 model AssetCategory {
