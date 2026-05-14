@@ -36,6 +36,7 @@ export async function PATCH(
     const validation = updateStatusSchema.safeParse(body);
 
     if (!validation.success) {
+      console.error("[PATCH Validation failed]", validation.error.format());
       return NextResponse.json(
         { error: "Validation failed", issues: validation.error.issues },
         { status: 400 }
@@ -62,8 +63,11 @@ export async function PATCH(
     });
 
     // Send email notification if requester provided an email and status actually changed
+    console.log(`[Email Trigger Check] Requester: ${existing.requesterEmail}, Old: ${existing.status}, New: ${newStatus}`);
+    
     if (existing.requesterEmail && existing.status !== newStatus) {
       try {
+        console.log(`[Email Trigger] Attempting to send to ${existing.requesterEmail}...`);
         await sendStatusUpdateEmail({
           to: existing.requesterEmail,
           ticketNumber: ticket.ticketNumber,
@@ -75,16 +79,19 @@ export async function PATCH(
           adminDescription: ticket.adminDescription,
           actionTaken: ticket.actionTaken,
         });
+        console.log("[Email Trigger] Sent successfully.");
       } catch (err) {
         console.error("[Email notification failed]", err);
       }
+    } else {
+      console.log("[Email Trigger] Skipped: No email or status didn't change.");
     }
 
     return NextResponse.json({ ticket });
-  } catch (error) {
-    console.error("[PATCH /api/tickets/[id]]", error);
+  } catch (error: any) {
+    console.error("[PATCH /api/tickets/[id]] ERROR:", error);
     return NextResponse.json(
-      { error: "Failed to update ticket" },
+      { error: "Failed to update ticket", details: error.message },
       { status: 500 }
     );
   }
