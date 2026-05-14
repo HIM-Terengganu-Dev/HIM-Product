@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 interface TicketDetailModalProps {
   ticket: Ticket | null;
   onClose: () => void;
-  onStatusChange: (id: string, status: string) => void;
+  onStatusChange: (id: string, updates: { status?: string, personInCharge?: string, adminDescription?: string, actionTaken?: string }) => void;
 }
 
 export default function TicketDetailModal({
@@ -17,7 +17,31 @@ export default function TicketDetailModal({
   onClose,
   onStatusChange,
 }: TicketDetailModalProps) {
+  const [personInCharge, setPersonInCharge] = useState(ticket?.personInCharge || "");
+  const [adminDescription, setAdminDescription] = useState(ticket?.adminDescription || "");
+  const [actionTaken, setActionTaken] = useState(ticket?.actionTaken || "");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    if (ticket) {
+      setPersonInCharge(ticket.personInCharge || "");
+      setAdminDescription(ticket.adminDescription || "");
+      setActionTaken(ticket.actionTaken || "");
+    }
+  }, [ticket]);
+
   if (!ticket) return null;
+
+  const handleUpdate = async (newStatus?: string) => {
+    setIsUpdating(true);
+    await onStatusChange(ticket.id, {
+      status: newStatus || ticket.status,
+      personInCharge,
+      adminDescription,
+      actionTaken,
+    });
+    setIsUpdating(false);
+  };
 
   return (
     <>
@@ -106,12 +130,63 @@ export default function TicketDetailModal({
             <div className="mb-2 flex items-center gap-2">
               <FileText className="h-4 w-4 text-gray-400" />
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Description
+                User Description
               </p>
             </div>
             <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
               {ticket.description}
             </p>
+          </div>
+
+          {/* Admin Management Section */}
+          <div className="space-y-4 rounded-xl border border-amber-100 bg-amber-50/30 p-4">
+            <div className="flex items-center gap-2 border-b border-amber-100 pb-2 mb-2">
+              <User className="h-4 w-4 text-amber-600" />
+              <p className="text-xs font-black uppercase tracking-widest text-amber-700">Administration Details</p>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[10px] font-bold text-amber-600 uppercase tracking-tighter mb-1">Person in Charge</label>
+                <input 
+                  type="text"
+                  value={personInCharge}
+                  onChange={(e) => setPersonInCharge(e.target.value)}
+                  placeholder="Technician name..."
+                  className="w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-amber-600 uppercase tracking-tighter mb-1">Description of the Problem</label>
+                <textarea 
+                  value={adminDescription}
+                  onChange={(e) => setAdminDescription(e.target.value)}
+                  placeholder="Detailed technical analysis..."
+                  rows={3}
+                  className="w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-amber-600 uppercase tracking-tighter mb-1">Action Taken</label>
+                <textarea 
+                  value={actionTaken}
+                  onChange={(e) => setActionTaken(e.target.value)}
+                  placeholder="Steps taken to resolve..."
+                  rows={3}
+                  className="w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 resize-none"
+                />
+              </div>
+
+              <button 
+                onClick={() => handleUpdate()}
+                disabled={isUpdating}
+                className="w-full rounded-lg bg-amber-600 py-2 text-xs font-bold text-white hover:bg-amber-700 transition-colors shadow-sm disabled:opacity-50"
+              >
+                {isUpdating ? "Saving..." : "Save Admin Details"}
+              </button>
+            </div>
           </div>
 
           {/* Status Update */}
@@ -129,7 +204,8 @@ export default function TicketDetailModal({
                 return (
                   <button
                     key={s}
-                    onClick={() => onStatusChange(ticket.id, s)}
+                    disabled={isUpdating}
+                    onClick={() => handleUpdate(s)}
                     className={cn(
                       "flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-all",
                       isActive

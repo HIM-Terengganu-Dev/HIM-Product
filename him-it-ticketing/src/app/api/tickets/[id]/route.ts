@@ -42,7 +42,8 @@ export async function PATCH(
       );
     }
 
-    const newStatus = validation.data.status as Status;
+    const { status: newStatus, personInCharge, adminDescription, actionTaken } = validation.data;
+    const status = newStatus as Status;
 
     // Fetch current ticket first (to get old status + email)
     const existing = await prisma.ticket.findUnique({ where: { id } });
@@ -52,7 +53,12 @@ export async function PATCH(
 
     const ticket = await prisma.ticket.update({
       where: { id },
-      data: { status: newStatus },
+      data: { 
+        status,
+        personInCharge: personInCharge || existing.personInCharge,
+        adminDescription: adminDescription || existing.adminDescription,
+        actionTaken: actionTaken || existing.actionTaken,
+      },
     });
 
     // Send email notification if requester provided an email and status actually changed
@@ -65,6 +71,9 @@ export async function PATCH(
           requesterName: ticket.requesterName,
           oldStatus: existing.status,
           newStatus,
+          personInCharge: ticket.personInCharge,
+          adminDescription: ticket.adminDescription,
+          actionTaken: ticket.actionTaken,
         });
       } catch (err) {
         console.error("[Email notification failed]", err);

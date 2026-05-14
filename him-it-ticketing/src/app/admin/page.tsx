@@ -61,21 +61,21 @@ export default function AdminPage() {
     }
   }, [status, fetchTickets]);
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
+  const handleStatusChange = async (id: string, updates: { status?: string, personInCharge?: string, adminDescription?: string, actionTaken?: string }) => {
     try {
       const res = await fetch(`/api/tickets/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(updates),
       });
-      if (!res.ok) throw new Error("Status update failed");
+      if (!res.ok) throw new Error("Update failed");
       const json = await res.json();
       setTickets((prev) =>
         prev.map((t) => (t.id === id ? { ...t, ...json.ticket } : t))
       );
       if (selectedTicket?.id === id) {
         setSelectedTicket((prev) =>
-          prev ? { ...prev, status: json.ticket.status } : null
+          prev ? { ...prev, ...json.ticket } : null
         );
       }
     } catch (err) {

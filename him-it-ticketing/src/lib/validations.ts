@@ -41,6 +41,9 @@ export const updateStatusSchema = z.object({
   status: z.enum(["Open", "InProgress", "Resolved", "Closed"], {
     error: "Status is required",
   }),
+  personInCharge: z.string().optional(),
+  adminDescription: z.string().optional(),
+  actionTaken: z.string().optional(),
 });
 
 export type TicketFormValues = z.infer<typeof ticketSchema>;

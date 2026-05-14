@@ -13,6 +13,9 @@ export interface Ticket {
   description: string;
   status: Status;
   assetId?: string | null;
+  personInCharge?: string | null;
+  adminDescription?: string | null;
+  actionTaken?: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -18,6 +18,9 @@ export async function sendStatusUpdateEmail({
   requesterName,
   oldStatus,
   newStatus,
+  personInCharge,
+  adminDescription,
+  actionTaken,
 }: {
   to: string;
   ticketNumber: string;
@@ -25,6 +28,9 @@ export async function sendStatusUpdateEmail({
   requesterName: string;
   oldStatus: Status;
   newStatus: Status;
+  personInCharge?: string | null;
+  adminDescription?: string | null;
+  actionTaken?: string | null;
 }) {
   const oldLabel = STATUS_CONFIG[oldStatus].label;
   const newLabel = STATUS_CONFIG[newStatus].label;
@@ -102,6 +108,28 @@ export async function sendStatusUpdateEmail({
                   </td>
                 </tr>
               </table>
+
+              <!-- Resolution Details (Only when Closed) -->
+              ${newStatus === "Closed" ? `
+              <div style="margin-bottom:28px; padding:24px; border:1px solid #E2E8F0; border-radius:12px; background:#fff;">
+                <p style="margin:0 0 16px;font-size:12px;color:#1E3A8A;font-weight:700;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #E2E8F0;padding-bottom:8px;">Resolution Summary</p>
+                
+                <div style="margin-bottom:16px;">
+                  <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Person in Charge</p>
+                  <p style="margin:2px 0 0;font-size:14px;color:#1E293B;font-weight:600;">${personInCharge || 'N/A'}</p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                  <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Problem Description</p>
+                  <p style="margin:2px 0 0;font-size:14px;color:#475569;line-height:1.5;">${adminDescription || 'N/A'}</p>
+                </div>
+
+                <div>
+                  <p style="margin:0;font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Action Taken</p>
+                  <p style="margin:2px 0 0;font-size:14px;color:#475569;line-height:1.5;">${actionTaken || 'N/A'}</p>
+                </div>
+              </div>
+              ` : ""}
 
               ${newStatus === "Resolved" || newStatus === "Closed"
     ? `<div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:12px;padding:16px 20px;margin-bottom:28px;text-align:center;">

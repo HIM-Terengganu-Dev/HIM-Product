@@ -23,7 +23,7 @@ interface TicketTableProps {
   tickets: Ticket[];
   onRefresh: () => void;
   onView: (ticket: Ticket) => void;
-  onStatusChange: (id: string, status: string) => void;
+  onStatusChange: (id: string, updates: { status?: string, personInCharge?: string, adminDescription?: string, actionTaken?: string }) => void;
   onDelete: (id: string) => void;
   loading: boolean;
 }
@@ -281,7 +281,7 @@ export default function TicketTable({
                         <StatusBadge status={ticket.status} />
                         <select
                           value={ticket.status}
-                          onChange={(e) => onStatusChange(ticket.id, e.target.value)}
+                          onChange={(e) => onStatusChange(ticket.id, { status: e.target.value })}
                           className="hidden group-hover:block appearance-none rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs shadow-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 cursor-pointer"
                           onClick={(e) => e.stopPropagation()}
                         >
