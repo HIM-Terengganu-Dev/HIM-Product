@@ -44,6 +44,9 @@ model Ticket {
   description   String   @db.Text
   status        Status   @default(Open)
   assetId       String?
+  personInCharge  String?
+  adminDescription String? @db.Text
+  actionTaken      String? @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
