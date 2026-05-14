@@ -16,8 +16,19 @@ export interface Ticket {
   personInCharge?: string | null;
   adminDescription?: string | null;
   actionTaken?: string | null;
+  resolvedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+  logs?: TicketLog[];
+}
+
+export interface TicketLog {
+  id: string;
+  ticketId: string;
+  action: string;
+  details?: string | null;
+  user?: string | null;
+  createdAt: string;
 }
 
 export type { Category, Priority, Status };

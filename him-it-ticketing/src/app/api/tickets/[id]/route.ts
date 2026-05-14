@@ -52,13 +52,40 @@ export async function PATCH(
       return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
     }
 
+    const isResolvedStatus = status === "Resolved" || status === "Closed";
+    const wasResolvedStatus = existing.status === "Resolved" || existing.status === "Closed";
+    
+    // Determine resolvedAt
+    let resolvedAt = existing.resolvedAt;
+    if (isResolvedStatus && !wasResolvedStatus) {
+      resolvedAt = new Date();
+    } else if (!isResolvedStatus) {
+      resolvedAt = null;
+    }
+
+    // Determine what changed for the log
+    let logAction = "Ticket Updated";
+    let logDetails = "Administration details updated.";
+    if (existing.status !== status) {
+      logAction = "Status Changed";
+      logDetails = `Status changed from ${existing.status} to ${status}.`;
+    }
+
     const ticket = await prisma.ticket.update({
       where: { id },
       data: { 
         status,
-        personInCharge: personInCharge || existing.personInCharge,
-        adminDescription: adminDescription || existing.adminDescription,
-        actionTaken: actionTaken || existing.actionTaken,
+        personInCharge: personInCharge !== undefined ? personInCharge : existing.personInCharge,
+        adminDescription: adminDescription !== undefined ? adminDescription : existing.adminDescription,
+        actionTaken: actionTaken !== undefined ? actionTaken : existing.actionTaken,
+        resolvedAt,
+        logs: {
+          create: {
+            action: logAction,
+            details: logDetails,
+            user: personInCharge || "System",
+          }
+        }
       },
     });
 

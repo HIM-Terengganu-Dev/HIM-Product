@@ -32,6 +32,11 @@ export async function GET(request: Request) {
     const tickets = await prisma.ticket.findMany({
       where,
       orderBy: { createdAt: "desc" },
+      include: {
+        logs: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
     });
 
     return NextResponse.json({ tickets });
@@ -77,6 +82,13 @@ export async function POST(request: Request) {
         description,
         status: "Open",
         assetId: assetId || null,
+        logs: {
+          create: {
+            action: "Ticket Created",
+            details: `Ticket submitted by ${requesterName} via user portal.`,
+            user: requesterName,
+          }
+        }
       },
     });
 

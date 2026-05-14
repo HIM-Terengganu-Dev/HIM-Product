@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { Ticket, STATUS_CONFIG, STATUSES } from "@/types";
 import { PriorityBadge, StatusBadge } from "./TicketBadge";
-import { formatDate } from "@/lib/utils";
-import { X, Clock, User, Building2, Tag, FileText, Mail, Phone } from "lucide-react";
+import { formatDate, formatDuration } from "@/lib/utils";
+import { X, Clock, User, Building2, Tag, FileText, Mail, Phone, List, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TicketDetailModalProps {
@@ -123,6 +123,13 @@ export default function TicketDetailModal({
               label="Last Updated"
               value={formatDate(ticket.updatedAt)}
             />
+            {ticket.resolvedAt && (
+              <MetaItem
+                icon={CheckCircle}
+                label="Time to Resolve"
+                value={formatDuration(ticket.createdAt, ticket.resolvedAt)}
+              />
+            )}
           </div>
 
           {/* Description */}
@@ -187,6 +194,37 @@ export default function TicketDetailModal({
                 {isUpdating ? "Saving..." : "Save Admin Details"}
               </button>
             </div>
+          </div>
+
+          {/* Ticket Logs */}
+          <div className="rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex items-center gap-2 border-b border-gray-100 pb-2 mb-4">
+              <List className="h-4 w-4 text-gray-400" />
+              <p className="text-xs font-black uppercase tracking-widest text-gray-500">Ticket Activity Log</p>
+            </div>
+            
+            {ticket.logs && ticket.logs.length > 0 ? (
+              <div className="space-y-4">
+                {ticket.logs.map((log) => (
+                  <div key={log.id} className="relative pl-4 border-l-2 border-gray-100 pb-1 last:pb-0">
+                    <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-blue-400 ring-4 ring-white" />
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-bold text-gray-800">{log.action}</p>
+                      <span className="text-[10px] font-medium text-gray-400">{formatDate(log.createdAt)}</span>
+                    </div>
+                    {log.details && (
+                      <p className="text-[11px] text-gray-500 leading-relaxed">{log.details}</p>
+                    )}
+                    <div className="mt-1 flex items-center gap-1">
+                      <User className="h-3 w-3 text-gray-300" />
+                      <span className="text-[10px] text-gray-400 font-medium">{log.user || 'System'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 italic text-center py-4">No activity logs available.</p>
+            )}
           </div>
 
           {/* Status Update */}

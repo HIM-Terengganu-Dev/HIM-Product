@@ -20,3 +20,23 @@ export function formatDate(date: Date | string): string {
 export function generateTicketNumber(count: number): string {
   return `TKT-${String(count).padStart(4, "0")}`;
 }
+
+export function formatDuration(start: string | Date, end: string | Date): string {
+  const startDate = typeof start === "string" ? new Date(start) : start;
+  const endDate = typeof end === "string" ? new Date(end) : end;
+  
+  const diffMs = endDate.getTime() - startDate.getTime();
+  if (diffMs < 0) return "0m";
+
+  const diffMins = Math.floor(diffMs / 60000);
+  const days = Math.floor(diffMins / 1440);
+  const hours = Math.floor((diffMins % 1440) / 60);
+  const mins = diffMins % 60;
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (mins > 0 || parts.length === 0) parts.push(`${mins}m`);
+
+  return parts.join(" ");
+}
